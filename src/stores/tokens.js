@@ -40,6 +40,7 @@ export const useTokenStore = defineStore('tokens', {
     },
     clearTokenPool(){
       this.tokens.length = 0
+      this.drawnTokens.length = 0
     }
   }
 })
