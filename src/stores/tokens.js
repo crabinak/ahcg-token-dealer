@@ -2,45 +2,23 @@ import {defineStore} from 'pinia'
 
 export const useTokenStore = defineStore('tokens', {
   state:()=>({
-    tokens:[], drawnTokens:[]
+    tokens:[]
   }),
-  getters:{
-    getTokens: (state)=>{
-      this.tokens
-    },
-    randomToken: (state)=>{
-      state.tokens[Math.floor(Math.random()*state.tokens.length)]
-    }
-  },
   actions:{
-    drawToken(){
-      if(this.tokens.length>0){
-        const token = this.tokens[Math.floor(Math.random()*this.tokens.length)]
-        // if(this.drawnTokens.length>0)this.drawnTokens.splice(0, 1)
-        this.drawnTokens.push(token)
-      }
-    },
-    resetTokens(){
-      this.drawnTokens.length = 0
-    },
-    removeDrawnToken(id){
-      var tokenIndex = this.drawnTokens.indexOf(id)
-      if(tokenIndex>-1) this.drawnTokens.splice(tokenIndex, 1)
-    },
-    removeToken(id){
-      var tokenIndex = this.tokens.indexOf(id)
-      if(tokenIndex>-1) this.tokens.splice(tokenIndex, 1)
-    },
-    addToken(id){
-      console.log(id)
-      this.tokens.push(id)
+    addToken(token_id){
+      this.tokens.push({id:token_id, locked:false, drawn:false, key:Date.now()})
     },
     clearTokens(){
-      this.drawnTokens.length=0
-    },
-    clearTokenPool(){
       this.tokens.length = 0
-      this.drawnTokens.length = 0
+    },
+    hideTokens(){
+      this.tokens.forEach(token=>{
+        token.drawn = false
+      })
+    },
+    removeToken(id){
+      const token = this.tokens.find(t=>t.id===id)
+      if(token) this.tokens.splice(this.tokens.indexOf(token),1)
     }
   }
 })

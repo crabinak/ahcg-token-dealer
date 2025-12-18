@@ -1,44 +1,30 @@
 <template>
   <ul class="token-list">
-    <li v-for="token, index in tokenData">
+    <li v-for="index in tokenData.token_count">
         <div class="token-list-item">
-          <Token @click="addToken(token)" class="clickable" :key="token.id" :id="token.id" :size="75" />
+          <Token @click="store.addToken(index)" class="clickable" :key="index" :id="index" :size="75" />
           <div class="total-tokens">
-            <Token v-for="tokenValue in store.tokens.filter(item => item.value==tokenData[index].value)" @click="removeToken(tokenValue)" class="clickable token-small" :key="token.id" :id="token.id" :size="40" />
+            <Token v-for="token in store.tokens.filter(token => token.id==index)" @click="store.removeToken(index)" class="clickable token-small" :key="index" :id="token.id" :size="40" />
           </div>
         </div>
     </li>
   </ul>
 </template>
 <script setup>
-  import {defineProps, inject, defineEmits} from 'vue'
+  import {inject, defineEmits} from 'vue'
   import Token from './Token.vue';
   import { useTokenStore } from '@/stores/tokens';
-
-  const props = defineProps({
-    tokens:Array
-  })
 
   const store = useTokenStore()
 
   const emits = defineEmits(["remove-token", "add-token"])
 
   const tokenData = inject("token_data")
-  const tokens = inject("tokens")
-
-  const removeToken = (id)=>{
-    store.removeToken(id)
-  }
-  const addToken = (id)=>{
-    store.addToken(id)
-    console.log(store.tokens)
-  }
 
 </script>
 <style scoped>
 ul{
   padding:0;
-  /* margin:10px; */
   list-style: none;
   
   max-width: 100%;
@@ -66,7 +52,6 @@ ul{
     margin:5px;
   }
   li{
-    /* border:1px solid red; */
     border-bottom:2px solid #b4d2ee;
     margin-bottom:10px;
   }
@@ -90,7 +75,5 @@ ul{
   .token-list{
     overflow-y: scroll;
     scrollbar-color: #b4d2ee #0e1930;
-   
-    /* scrollbar-width: thin; */
   }
 </style>
