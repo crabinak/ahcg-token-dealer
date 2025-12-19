@@ -1,6 +1,6 @@
 <template>
   <ul class="token-list">
-    <li v-for="index in tokenData.token_count">
+    <li v-for="(t, index) in tokenData.token_count+1">
         <div class="token-list-item">
           <Token @click="store.addToken(index)" class="clickable" :key="index" :id="index" :size="75" />
           <div class="total-tokens">
