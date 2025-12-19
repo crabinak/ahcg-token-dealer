@@ -5,7 +5,7 @@
 </template>
 <style scoped>
   .token{
-    background:url('/img/token-sprites.jpg');
+    background:url('/img/token-sprites-02.jpg');
     border-radius:100%;
     background-size: cover;
     box-shadow: 2px 5px 5px rgba(0,0,0,.5);
