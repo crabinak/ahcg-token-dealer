@@ -10,11 +10,11 @@
      </div>
     <div class="btn-container">
       <Btn v-if="!editingTokens" :text="btnLabel" class="block-btn" @click="()=>{editingTokens=true}" />
-      <Btn v-if="!editingTokens" text="Draw Token" @click="drawToken()" class="" :class="{warning:store.tokens.length<1}"/>
+      <Btn v-if="!editingTokens" text="Draw Token" @click="drawToken()" class="" :class="{warning:store.tokens.length<1}" :disabled="store.tokens.length==0" />
       <select class="token-count" ref="token-number" v-if="!editingTokens && store.tokens.length>0" name="" id="">
         <option v-for="index in maxTokens || 10" :value="index">{{ index }}</option>
       </select>
-      <Btn v-if="!editingTokens" text="Draw Another Token" @click="drawToken(true)" :disabled="getDrawnTokenCount==0||getDrawnTokenCount==store.tokens.length" class="" :class="{warning:getDrawnTokenCount==0||getDrawnTokenCount==store.tokens.length}"/>
+      <Btn v-if="!editingTokens" text="Draw Another Token" @click="drawToken(true)" :disabled="getDrawnTokenCount==0||getDrawnTokenCount==store.tokens.length||drawnTokens.length==0" class="" :class="{warning:getDrawnTokenCount==0||getDrawnTokenCount==store.tokens.length||drawnTokens.length==0}"/>
     </div>
     <div v-if="!editingTokens" class="drawn-tokens">
       <TransitionGroup name="drawn-tokens">
@@ -57,7 +57,7 @@
   })
 
   const drawToken = (drawAnother = false)=>{
-    const waitTime = store.tokens.filter(token=>token.drawn).length>0||!drawAnother?500:0
+    const waitTime = drawnTokens.length>0&&!drawAnother?500:0
     if(!drawingToken){
       drawingToken = true
       if(!drawAnother){
