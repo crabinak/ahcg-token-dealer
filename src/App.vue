@@ -2,7 +2,7 @@
 <template>
   <div class="main">
     <img class="title-img" src="/img/AH-title.png" alt="Arkham Horror, The Card Game" />
-    <p style="text-align: center; margin:0; padding:5px; font-size:.7rem;">version 1.1</p>
+    <p style="text-align: center; margin:0; padding:5px; font-size:.7rem;">version 1.2</p>
      <div class="description">
       <p class="instruction" v-if="store.tokens.length<=0 && !editingTokens">You have no tokens! Add tokens to the token pool.</p>
        <p class="instruction" v-if="editingTokens">Select tokens to add to the pool. Click added tokens to remove them from the pool.</p>
@@ -14,6 +14,7 @@
       <select class="token-count" ref="token-number" v-if="!editingTokens && store.tokens.length>0" name="" id="">
         <option v-for="index in maxTokens || 10" :value="index">{{ index }}</option>
       </select>
+      <Btn v-if="!editingTokens" text="Draw Another Token" @click="drawToken(true)" :disabled="getDrawnTokenCount==0||getDrawnTokenCount==store.tokens.length" class="" :class="{warning:getDrawnTokenCount==0||getDrawnTokenCount==store.tokens.length}"/>
     </div>
     <div v-if="!editingTokens" class="drawn-tokens">
       <TransitionGroup name="drawn-tokens">
@@ -22,12 +23,12 @@
         </div>
       </TransitionGroup>
     </div>
-    <EditTokens v-if="editingTokens" @done="()=>{editingTokens = false}" />
+    <EditTokens v-if="editingTokens" @done="()=>{editingTokens = false; drawnTokens.length=0;}" />
   </div>
 </template>
 
 <script setup>
-  import {ref, useTemplateRef} from 'vue'
+  import {ref, useTemplateRef, reactive} from 'vue'
   import tokenData from './data/data.json'
   import Token from './Components/Token.vue'
   import Btn from './Components/Btn.vue';
@@ -42,6 +43,8 @@
   const store = useTokenStore()
   const editingTokens = ref(false)
   const tokenNumber = useTemplateRef('token-number')
+
+  const drawnTokens = reactive([])
   
   let drawingToken = false
 
@@ -53,15 +56,14 @@
     return store.tokens.length>0?"Edit Tokens":"Add Tokens"
   })
 
-  const drawnTokens = computed(()=>{
-    return store.tokens.filter(token => token.drawn)
-  })
-
-  const drawToken = ()=>{
-    const waitTime = store.tokens.filter(token=>token.drawn).length>0?500:0
+  const drawToken = (drawAnother = false)=>{
+    const waitTime = store.tokens.filter(token=>token.drawn).length>0||!drawAnother?500:0
     if(!drawingToken){
       drawingToken = true
-      store.hideTokens()
+      if(!drawAnother){
+        store.hideTokens()
+        drawnTokens.length = 0
+      }
       setTimeout(getTokens, waitTime)
     }
   }
@@ -69,10 +71,19 @@
   const getTokens = ()=>{
     let i = 0; while(i++<tokenNumber.value.value){
       const available_tokens = store.tokens.filter(token=>!token.drawn)
-      if(available_tokens.length>0)available_tokens[Math.floor(Math.random()*available_tokens.length)].drawn = true
+
+      if(available_tokens.length>0){
+        const token = available_tokens[Math.floor(Math.random()*available_tokens.length)]
+        token.drawn = true
+        drawnTokens.push(token)
+      }
     }
     drawingToken = false
   }
+
+  const getDrawnTokenCount = computed(()=>{
+    return store.tokens.filter(token=>token.drawn==true).length
+  })
     
 </script>
 
